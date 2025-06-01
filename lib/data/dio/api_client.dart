@@ -52,7 +52,7 @@ abstract class ApiClient {
   Future<void> createGuardia(@Body() CreateGuardiaRequest request);
 
   @PUT('/api/guardia/{id}')
-  Future<Guardia> updateGuardia(
+  Future<void> updateGuardia(
     @Path('id') int id,
     @Body() UpdateGuardiaRequest request,
   );

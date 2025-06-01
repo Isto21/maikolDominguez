@@ -40,13 +40,13 @@ class GuardiasRepositoryImpl implements GuardiasRepository {
   }
 
   @override
-  Future<Either<Failure, Guardia>> updateGuardia(
+  Future<Either<Failure, bool>> updateGuardia(
     int id,
     UpdateGuardiaRequest request,
   ) async {
     try {
-      final guardia = await _apiClient.updateGuardia(id, request);
-      return Right(guardia);
+      await _apiClient.updateGuardia(id, request);
+      return const Right(true);
     } catch (e) {
       return Left(
         ServerFailure('Error al actualizar guardia: ${e.toString()}'),

@@ -289,6 +289,7 @@ class _ApiClient implements ApiClient {
             )
             .copyWith(baseUrl: _combineBaseUrls(_dio.options.baseUrl, baseUrl)),
       );
+      final _result = await _dio.fetch<Map<String, dynamic>>(options);
       print(options.path);
     } on Object catch (e, s) {
       errorLogger?.logError(e, s, options);
@@ -313,7 +314,7 @@ class _ApiClient implements ApiClient {
           )
           .copyWith(baseUrl: _combineBaseUrls(_dio.options.baseUrl, baseUrl)),
     );
-    // final _result = await _dio.fetch<Map<String, dynamic>>(_options);
+    final _result = await _dio.fetch<Map<String, dynamic>>(_options);
     // late Guardia _value;
     try {
       // _value = Guardia.fromJson(_result.data!["data"]['guardia']);
@@ -325,14 +326,14 @@ class _ApiClient implements ApiClient {
   }
 
   @override
-  Future<Guardia> updateGuardia(int id, UpdateGuardiaRequest request) async {
+  Future<void> updateGuardia(int id, UpdateGuardiaRequest request) async {
     final _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
     final _headers = <String, dynamic>{};
     final _data = <String, dynamic>{};
     _data.addAll(request.toJson());
     final _options = _setStreamType<Guardia>(
-      Options(method: 'PUT', headers: _headers, extra: _extra)
+      Options(method: 'PATCH', headers: _headers, extra: _extra)
           .compose(
             _dio.options,
             '/api/guardia/${id}',
@@ -342,14 +343,14 @@ class _ApiClient implements ApiClient {
           .copyWith(baseUrl: _combineBaseUrls(_dio.options.baseUrl, baseUrl)),
     );
     final _result = await _dio.fetch<Map<String, dynamic>>(_options);
-    late Guardia _value;
+    // late Guardia _value;
     try {
-      _value = Guardia.fromJson(_result.data!);
+      // _value = Guardia.fromJson(_result.data!);
     } on Object catch (e, s) {
       errorLogger?.logError(e, s, _options);
       rethrow;
     }
-    return _value;
+    // return _value;
   }
 
   @override

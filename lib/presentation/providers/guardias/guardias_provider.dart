@@ -79,7 +79,7 @@ class GuardiasNotifier extends StateNotifier<GuardiasState> {
     state = state.copyWith(isLoading: true, error: null);
 
     final result = await _repository.updateGuardia(id, request);
-
+    await loadGuardias();
     return result.fold(
       (failure) {
         state = state.copyWith(isLoading: false, error: failure.message);
@@ -92,7 +92,7 @@ class GuardiasNotifier extends StateNotifier<GuardiasState> {
 
         state = state.copyWith(
           isLoading: false,
-          guardias: updatedGuardias,
+          // guardias: updatedGuardias,
           error: null,
         );
         return true;

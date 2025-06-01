@@ -143,13 +143,16 @@ class CreateGuardiaRequest {
 
 @JsonSerializable()
 class UpdateGuardiaRequest {
-  final GuardiaStatus? status;
-  @JsonKey(name: 'startTime')
-  final DateTime? startTime;
-  @JsonKey(name: 'endTime')
-  final DateTime? endTime;
+  final String? status;
+  // @JsonKey(name: 'startTime')
+  // final DateTime? startTime;
+  // @JsonKey(name: 'endTime')
+  // final DateTime? endTime;
 
-  UpdateGuardiaRequest({this.status, this.startTime, this.endTime});
+  UpdateGuardiaRequest({
+    this.status,
+    //  this.startTime, this.endTime
+  });
 
   factory UpdateGuardiaRequest.fromJson(Map<String, dynamic> json) =>
       _$UpdateGuardiaRequestFromJson(json);

@@ -10,7 +10,7 @@ abstract class GuardiasRepository {
   });
   Future<Either<Failure, bool>> createGuardia(CreateGuardiaRequest request);
 
-  Future<Either<Failure, Guardia>> updateGuardia(
+  Future<Either<Failure, bool>> updateGuardia(
     int id,
     UpdateGuardiaRequest request,
   );

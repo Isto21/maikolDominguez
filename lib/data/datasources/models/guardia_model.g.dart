@@ -71,30 +71,30 @@ UpdateGuardiaRequest _$UpdateGuardiaRequestFromJson(
   Map<String, dynamic> json,
 ) => UpdateGuardiaRequest(
   status: json['status'] != null
-      ? GuardiaStatus.values.firstWhere((e) => e.name == json['status'])
+      ? GuardiaStatus.values.firstWhere((e) => e.name == json['status']).name
       : null,
-  startTime: json['startTime'] == null
-      ? null
-      : DateTime.parse(json['startTime'] as String),
-  endTime: json['endTime'] == null
-      ? null
-      : DateTime.parse(json['endTime'] as String),
+  // startTime: json['startTime'] == null
+  //     ? null
+  //     : DateTime.parse(json['startTime'] as String),
+  // endTime: json['endTime'] == null
+  //     ? null
+  //     : DateTime.parse(json['endTime'] as String),
 );
 
 Map<String, dynamic> _$UpdateGuardiaRequestToJson(
   UpdateGuardiaRequest instance,
 ) => <String, dynamic>{
   'status': instance.status,
-  'startTime': instance.startTime?.toIso8601String(),
-  'endTime': instance.endTime?.toIso8601String(),
+  // 'startTime': instance.startTime?.toIso8601String(),
+  // 'endTime': instance.endTime?.toIso8601String(),
 };
 
 GuardiaUsuario _$GuardiaUsuarioFromJson(Map<String, dynamic> json) =>
     GuardiaUsuario(
       id: (json['id'] as num).toInt(),
-      user: json['user'] == null
+      user: json['usuario'] == null
           ? null
-          : User.fromJson(json['user'] as Map<String, dynamic>),
+          : User.fromJson(json['usuario'] as Map<String, dynamic>),
       status: json['status'] as bool,
     );
 

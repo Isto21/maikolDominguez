@@ -41,6 +41,7 @@ class _GuardiasListPageState extends ConsumerState<GuardiasListPage>
     final authState = ref.watch(authProvider);
     final currentUser = authState.user;
     final isAdmin = currentUser?.role == 'admin';
+    final isTeacher = currentUser?.role == 'profesor';
 
     return Scaffold(
       backgroundColor: AppTheme.backgroundLight,
@@ -88,39 +89,49 @@ class _GuardiasListPageState extends ConsumerState<GuardiasListPage>
           : TabBarView(
               controller: _tabController,
               children: [
-                _buildGuardiasList(guardiasState.guardias, isAdmin),
+                _buildGuardiasList(guardiasState.guardias, isAdmin, isTeacher),
                 _buildGuardiasList(
                   guardiasState.guardias
                       .where((g) => g.status == GuardiaStatus.planificada)
                       .toList(),
                   isAdmin,
+                  isTeacher,
                 ),
                 _buildGuardiasList(
                   guardiasState.guardias
                       .where((g) => g.status == GuardiaStatus.pendiente)
                       .toList(),
                   isAdmin,
+                  isTeacher,
                 ),
                 _buildGuardiasList(
                   guardiasState.guardias
                       .where((g) => g.status == GuardiaStatus.realizada)
                       .toList(),
                   isAdmin,
+                  isTeacher,
                 ),
               ],
             ),
-      floatingActionButton: FadeInUp(
-        duration: const Duration(milliseconds: 500),
-        child: FloatingActionButton(
-          onPressed: () => context.go(AppRouter.createGuardia),
-          backgroundColor: AppTheme.primaryBlue,
-          child: const Icon(Icons.add, color: Colors.white),
-        ),
-      ),
+
+      floatingActionButton: (isAdmin)
+          ? FadeInUp(
+              duration: const Duration(milliseconds: 500),
+              child: FloatingActionButton(
+                onPressed: () => context.go(AppRouter.createGuardia),
+                backgroundColor: AppTheme.primaryBlue,
+                child: const Icon(Icons.add, color: Colors.white),
+              ),
+            )
+          : null,
     );
   }
 
-  Widget _buildGuardiasList(List<Guardia> guardias, bool isAdmin) {
+  Widget _buildGuardiasList(
+    List<Guardia> guardias,
+    bool isAdmin,
+    bool isTeacher,
+  ) {
     if (guardias.isEmpty) {
       return Center(
         child: Column(
@@ -152,7 +163,7 @@ class _GuardiasListPageState extends ConsumerState<GuardiasListPage>
               child: SlideAnimation(
                 verticalOffset: 50.0,
                 child: FadeInAnimation(
-                  child: _buildGuardiaCard(guardias[index], isAdmin),
+                  child: _buildGuardiaCard(guardias[index], isAdmin, isTeacher),
                 ),
               ),
             );
@@ -162,7 +173,7 @@ class _GuardiasListPageState extends ConsumerState<GuardiasListPage>
     );
   }
 
-  Widget _buildGuardiaCard(Guardia guardia, bool isAdmin) {
+  Widget _buildGuardiaCard(Guardia guardia, bool isAdmin, bool isTeacher) {
     return Container(
       margin: const EdgeInsets.only(bottom: 16),
       decoration: BoxDecoration(
@@ -376,22 +387,26 @@ class _GuardiasListPageState extends ConsumerState<GuardiasListPage>
                       ),
                     ),
                     const SizedBox(width: 12),
-                    Expanded(
-                      child: OutlinedButton.icon(
-                        onPressed: () => _showEditGuardiaDialog(guardia),
-                        icon: const Icon(Icons.edit, size: 16),
-                        label: const Text('Editar'),
-                        style: OutlinedButton.styleFrom(
-                          foregroundColor: AppTheme.successGreen,
-                          side: const BorderSide(color: AppTheme.successGreen),
+                    if (guardia.status != GuardiaStatus.realizada)
+                      Expanded(
+                        child: OutlinedButton.icon(
+                          onPressed: () => _showEditGuardiaDialog(guardia),
+                          icon: const Icon(Icons.edit, size: 16),
+                          label: const Text('Editar'),
+                          style: OutlinedButton.styleFrom(
+                            foregroundColor: AppTheme.successGreen,
+                            side: const BorderSide(
+                              color: AppTheme.successGreen,
+                            ),
+                          ),
                         ),
                       ),
-                    ),
                   ],
                 ),
 
                 // Botón de confirmar asistencia solo para admins
-                if (isAdmin && guardia.tieneUsuariosPendientes) ...[
+                if ((isAdmin || isTeacher) &&
+                    guardia.tieneUsuariosPendientes) ...[
                   const SizedBox(height: 12),
                   SizedBox(
                     width: double.infinity,
@@ -552,9 +567,51 @@ class _GuardiasListPageState extends ConsumerState<GuardiasListPage>
                         ),
                         const SizedBox(width: 8),
                         Expanded(
-                          child: Text(
-                            user.fullName,
-                            style: const TextStyle(fontSize: 14),
+                          child: InkWell(
+                            onTap: () => showDialog(
+                              context: context,
+                              builder: (context) {
+                                return AlertDialog(
+                                  title: const Text('Usuario'),
+                                  //MOstrar todos los datos del usuario
+                                  content: Column(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      Text(
+                                        "Nombre:${user.fullName}",
+                                        style: const TextStyle(fontSize: 14),
+                                      ),
+                                      Text(
+                                        "Correo:${user.email ?? ''}",
+                                        style: const TextStyle(fontSize: 14),
+                                      ),
+                                      Text(
+                                        "Apto:${user.apto ?? ''}",
+                                        style: const TextStyle(fontSize: 14),
+                                      ),
+                                      Text(
+                                        "Solapin:${user.cardNumber ?? ''}",
+                                        style: const TextStyle(fontSize: 14),
+                                      ),
+                                      Text(
+                                        "Carne de identidad:${user.ci ?? ''}",
+                                        style: const TextStyle(fontSize: 14),
+                                      ),
+                                    ],
+                                  ),
+                                  actions: [
+                                    TextButton(
+                                      onPressed: () => Navigator.pop(context),
+                                      child: const Text('Cerrar'),
+                                    ),
+                                  ],
+                                );
+                              },
+                            ),
+                            child: Text(
+                              user.fullName,
+                              style: const TextStyle(fontSize: 14),
+                            ),
                           ),
                         ),
                         Text(
@@ -641,7 +698,7 @@ class _GuardiasListPageState extends ConsumerState<GuardiasListPage>
                       Navigator.pop(context);
 
                       final request = UpdateGuardiaRequest(
-                        status: selectedStatus,
+                        status: selectedStatus.name,
                       );
                       final success = await ref
                           .read(guardiasProvider.notifier)
@@ -686,45 +743,50 @@ class _GuardiasListPageState extends ConsumerState<GuardiasListPage>
               final user = gu.user;
               if (user == null) return const SizedBox.shrink();
 
-              return ListTile(
-                leading: CircleAvatar(
-                  backgroundColor: AppTheme.primaryBlue,
-                  child: Text(
-                    user.firstName.substring(0, 1).toUpperCase(),
-                    style: const TextStyle(color: Colors.white),
+              return Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  ListTile(
+                    leading: CircleAvatar(
+                      backgroundColor: AppTheme.primaryBlue,
+                      child: Text(
+                        user.firstName.substring(0, 1).toUpperCase(),
+                        style: const TextStyle(color: Colors.white),
+                      ),
+                    ),
+                    title: Text(user.fullName),
+                    subtitle: Text(user.email ?? ''),
                   ),
-                ),
-                title: Text(user.fullName),
-                subtitle: Text(user.email ?? ''),
-                trailing: ElevatedButton(
-                  onPressed: () async {
-                    Navigator.pop(context);
+                  ElevatedButton(
+                    onPressed: () async {
+                      Navigator.pop(context);
 
-                    final success = await ref
-                        .read(guardiasProvider.notifier)
-                        .confirmarAsistencia(guardia.id, user.id);
+                      final success = await ref
+                          .read(guardiasProvider.notifier)
+                          .confirmarAsistencia(guardia.id, user.id);
 
-                    if (mounted) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                          content: Text(
-                            success
-                                ? 'Asistencia confirmada para ${user.fullName}'
-                                : 'Error al confirmar asistencia',
+                      if (mounted) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text(
+                              success
+                                  ? 'Asistencia confirmada para ${user.fullName}'
+                                  : 'Error al confirmar asistencia',
+                            ),
+                            backgroundColor: success
+                                ? AppTheme.successGreen
+                                : AppTheme.errorRed,
                           ),
-                          backgroundColor: success
-                              ? AppTheme.successGreen
-                              : AppTheme.errorRed,
-                        ),
-                      );
-                    }
-                  },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: AppTheme.successGreen,
-                    foregroundColor: Colors.white,
+                        );
+                      }
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: AppTheme.successGreen,
+                      foregroundColor: Colors.white,
+                    ),
+                    child: const Text('Confirmar'),
                   ),
-                  child: const Text('Confirmar'),
-                ),
+                ],
               );
             }),
           ],
