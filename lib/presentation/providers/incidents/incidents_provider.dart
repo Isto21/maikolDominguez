@@ -64,7 +64,10 @@ class IncidentsNotifier extends StateNotifier<IncidentsState> {
 
     return result.fold(
       (failure) {
-        state = state.copyWith(isLoading: false, error: failure.message);
+        state = state.copyWith(
+          isLoading: false,
+          error: "No se pudo crear la incidencia",
+        );
         return false;
       },
       (incident) {

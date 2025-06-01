@@ -5,7 +5,7 @@ part 'incident_model.g.dart';
 @JsonSerializable()
 class Incident {
   final int id;
-  @JsonKey(name: 'guardia_id')
+  @JsonKey(name: 'guardiaId')
   final int guardiaId;
   final String title;
   final String description;
@@ -30,26 +30,30 @@ class Incident {
     this.updatedAt,
   });
 
-  factory Incident.fromJson(Map<String, dynamic> json) => _$IncidentFromJson(json);
+  factory Incident.fromJson(Map<String, dynamic> json) =>
+      _$IncidentFromJson(json);
   Map<String, dynamic> toJson() => _$IncidentToJson(this);
 }
 
 @JsonSerializable()
 class CreateIncidentRequest {
-  @JsonKey(name: 'guardia_id')
+  @JsonKey(name: 'guardiaId')
   final int guardiaId;
-  final String title;
+  // final String title;
   final String description;
-  final String severity;
+  final int userId;
+  // final String severity;
 
   CreateIncidentRequest({
     required this.guardiaId,
-    required this.title,
+    required this.userId,
+    // required this.title,
     required this.description,
-    required this.severity,
+    // required this.severity,
   });
 
-  factory CreateIncidentRequest.fromJson(Map<String, dynamic> json) => _$CreateIncidentRequestFromJson(json);
+  factory CreateIncidentRequest.fromJson(Map<String, dynamic> json) =>
+      _$CreateIncidentRequestFromJson(json);
   Map<String, dynamic> toJson() => _$CreateIncidentRequestToJson(this);
 }
 
@@ -67,6 +71,7 @@ class UpdateIncidentRequest {
     this.resolved,
   });
 
-  factory UpdateIncidentRequest.fromJson(Map<String, dynamic> json) => _$UpdateIncidentRequestFromJson(json);
+  factory UpdateIncidentRequest.fromJson(Map<String, dynamic> json) =>
+      _$UpdateIncidentRequestFromJson(json);
   Map<String, dynamic> toJson() => _$UpdateIncidentRequestToJson(this);
 }

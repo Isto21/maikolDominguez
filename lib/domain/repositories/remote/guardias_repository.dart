@@ -8,10 +8,15 @@ abstract class GuardiasRepository {
     int? year,
     int? studentId,
   });
-  Future<Either<Failure, Guardia>> createGuardia(CreateGuardiaRequest request);
+  Future<Either<Failure, bool>> createGuardia(CreateGuardiaRequest request);
+
   Future<Either<Failure, Guardia>> updateGuardia(
     int id,
-    Map<String, dynamic> data,
+    UpdateGuardiaRequest request,
   );
   Future<Either<Failure, void>> deleteGuardia(int id);
+  Future<Either<Failure, void>> confirmarAsistencia(
+    int guardiaId,
+    int usuarioId,
+  );
 }

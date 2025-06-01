@@ -49,16 +49,22 @@ abstract class ApiClient {
   });
 
   @POST('/api/guardia')
-  Future<Guardia> createGuardia(@Body() CreateGuardiaRequest request);
+  Future<void> createGuardia(@Body() CreateGuardiaRequest request);
 
   @PUT('/api/guardia/{id}')
   Future<Guardia> updateGuardia(
     @Path('id') int id,
-    @Body() Map<String, dynamic> data,
+    @Body() UpdateGuardiaRequest request,
   );
 
   @DELETE('/api/guardia/{id}')
   Future<void> deleteGuardia(@Path('id') int id);
+
+  @GET('/api/guardia/confirmarAsistencia/{guardiaId}/{usuarioId}')
+  Future<void> confirmarAsistencia(
+    @Path('guardiaId') int guardiaId,
+    @Path('usuarioId') int usuarioId,
+  );
 
   // Incident endpoints
   @GET('/api/incidents')

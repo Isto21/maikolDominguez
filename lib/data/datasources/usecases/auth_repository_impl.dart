@@ -73,7 +73,7 @@ class AuthRepositoryImpl implements AuthRepository {
       }
 
       return Right(response);
-    } catch (e) {
+    } on DioException catch (e) {
       return Left(ServerFailure(_getErrorMessage(e)));
     }
   }

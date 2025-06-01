@@ -73,7 +73,6 @@ class MyApp extends StatelessWidget {
         final router = ref.read(routerProvider);
         // final locale = ref.watch(localeProvider);
         print("");
-        print("");
         final brightness = ref.watch(isDarkThemeProvider);
         return MaterialApp.router(
           debugShowCheckedModeBanner: false,

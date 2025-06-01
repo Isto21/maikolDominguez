@@ -1,10 +1,10 @@
 import 'package:animate_do/animate_do.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:go_router/go_router.dart';
 import 'package:maikol_tesis/config/router/router.dart';
 import 'package:maikol_tesis/config/theme/app_theme.dart';
+import 'package:maikol_tesis/data/datasources/models/guardia_model.dart';
 import 'package:maikol_tesis/presentation/providers/auth/auth_provider.dart';
 import 'package:maikol_tesis/presentation/providers/guardias/guardias_provider.dart';
 
@@ -29,43 +29,42 @@ class _HomePageState extends ConsumerState<HomePage> {
     final authState = ref.watch(authProvider);
     final guardiasState = ref.watch(guardiasProvider);
     final user = authState.user;
+    final isAdmin = user?.role == 'admin';
 
     return Scaffold(
       backgroundColor: AppTheme.backgroundLight,
-      body: SafeArea(
-        child: RefreshIndicator(
-          onRefresh: () async {
-            await ref.read(guardiasProvider.notifier).loadGuardias();
-          },
-          child: SingleChildScrollView(
-            physics: const AlwaysScrollableScrollPhysics(),
-            padding: const EdgeInsets.all(16),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                // Header
-                FadeInDown(
-                  duration: const Duration(milliseconds: 800),
-                  child: Container(
-                    padding: const EdgeInsets.all(20),
-                    decoration: BoxDecoration(
-                      gradient: const LinearGradient(
-                        colors: [AppTheme.primaryBlue, AppTheme.lightBlue],
-                        begin: Alignment.topLeft,
-                        end: Alignment.bottomRight,
-                      ),
-                      borderRadius: BorderRadius.circular(16),
-                    ),
-                    child: Row(
+      body: SingleChildScrollView(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Header de bienvenida
+            FadeInDown(
+              duration: const Duration(milliseconds: 800),
+              child: Container(
+                width: double.infinity,
+                padding: const EdgeInsets.all(20),
+                decoration: BoxDecoration(
+                  gradient: const LinearGradient(
+                    colors: [AppTheme.primaryBlue, AppTheme.lightBlue],
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                  ),
+                  borderRadius: BorderRadius.circular(16),
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
                       children: [
                         CircleAvatar(
-                          radius: 30,
+                          radius: 25,
                           backgroundColor: Colors.white,
                           child: Text(
                             user?.firstName.substring(0, 1).toUpperCase() ??
                                 'U',
                             style: const TextStyle(
-                              fontSize: 24,
+                              fontSize: 20,
                               fontWeight: FontWeight.bold,
                               color: AppTheme.primaryBlue,
                             ),
@@ -84,166 +83,262 @@ class _HomePageState extends ConsumerState<HomePage> {
                                   color: Colors.white,
                                 ),
                               ),
-                              const SizedBox(height: 4),
-                              // Text(
-                              //   user?.brigade != null
-                              //       ? 'Brigada ${user!.brigade} - ${user.year}° Año'
-                              //       : 'Bienvenido al sistema',
-                              //   style: const TextStyle(
-                              //     fontSize: 14,
-                              //     color: Colors.white70,
-                              //   ),
-                              // ),
+                              Text(
+                                'Bienvenido al Sistema de Guardias UCI',
+                                style: TextStyle(
+                                  fontSize: 14,
+                                  color: Colors.white.withOpacity(0.9),
+                                ),
+                              ),
+                              if (isAdmin) ...[
+                                const SizedBox(height: 4),
+                                Container(
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 8,
+                                    vertical: 2,
+                                  ),
+                                  decoration: BoxDecoration(
+                                    color: Colors.white.withOpacity(0.2),
+                                    borderRadius: BorderRadius.circular(12),
+                                  ),
+                                  child: const Text(
+                                    'Administrador',
+                                    style: TextStyle(
+                                      fontSize: 12,
+                                      color: Colors.white,
+                                      fontWeight: FontWeight.w500,
+                                    ),
+                                  ),
+                                ),
+                              ],
                             ],
                           ),
                         ),
-                        IconButton(
-                          onPressed: () => context.go(AppRouter.profile),
-                          icon: const Icon(Icons.settings, color: Colors.white),
-                        ),
                       ],
                     ),
-                  ),
+                  ],
                 ),
-
-                const SizedBox(height: 24),
-
-                // Estadísticas rápidas
-                FadeInUp(
-                  duration: const Duration(milliseconds: 800),
-                  delay: const Duration(milliseconds: 200),
-                  child: Row(
-                    children: [
-                      Expanded(
-                        child: _buildStatCard(
-                          'Guardias Planificadas',
-                          guardiasState.guardias
-                              .where((g) => g.status.name == 'planificada')
-                              .length
-                              .toString(),
-                          Icons.schedule,
-                          AppTheme.warningOrange,
-                        ),
-                      ),
-                      const SizedBox(width: 12),
-                      Expanded(
-                        child: _buildStatCard(
-                          'Guardias Realizadas',
-                          guardiasState.guardias
-                              .where((g) => g.status.name == 'realizada')
-                              .length
-                              .toString(),
-                          Icons.check_circle,
-                          AppTheme.successGreen,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-
-                const SizedBox(height: 24),
-
-                // Acciones rápidas
-                FadeInUp(
-                  duration: const Duration(milliseconds: 800),
-                  delay: const Duration(milliseconds: 400),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const Text(
-                        'Acciones Rápidas',
-                        style: TextStyle(
-                          fontSize: 20,
-                          fontWeight: FontWeight.bold,
-                          color: AppTheme.primaryBlue,
-                        ),
-                      ),
-                      const SizedBox(height: 16),
-                      AnimationLimiter(
-                        child: GridView.count(
-                          shrinkWrap: true,
-                          physics: const NeverScrollableScrollPhysics(),
-                          crossAxisCount: 2,
-                          crossAxisSpacing: 12,
-                          mainAxisSpacing: 12,
-                          childAspectRatio: 1.2,
-                          children: AnimationConfiguration.toStaggeredList(
-                            duration: const Duration(milliseconds: 375),
-                            childAnimationBuilder: (widget) => SlideAnimation(
-                              horizontalOffset: 50.0,
-                              child: FadeInAnimation(child: widget),
-                            ),
-                            children: [
-                              _buildActionCard(
-                                'Ver Guardias',
-                                Icons.security,
-                                AppTheme.primaryBlue,
-                                () => context.go(AppRouter.guardias),
-                              ),
-                              _buildActionCard(
-                                'Crear Guardia',
-                                Icons.add_circle,
-                                AppTheme.successGreen,
-                                () => context.go(AppRouter.createGuardia),
-                              ),
-                              _buildActionCard(
-                                'Mapa UCI',
-                                Icons.map,
-                                AppTheme.infoBlue,
-                                () => context.go(AppRouter.map),
-                              ),
-                              _buildActionCard(
-                                'Incidencias',
-                                Icons.report_problem,
-                                AppTheme.warningOrange,
-                                () => context.go(AppRouter.incidents),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-
-                const SizedBox(height: 24),
-
-                // Próximas guardias
-                if (guardiasState.guardias.isNotEmpty)
-                  FadeInUp(
-                    duration: const Duration(milliseconds: 800),
-                    delay: const Duration(milliseconds: 600),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            const Text(
-                              'Próximas Guardias',
-                              style: TextStyle(
-                                fontSize: 20,
-                                fontWeight: FontWeight.bold,
-                                color: AppTheme.primaryBlue,
-                              ),
-                            ),
-                            TextButton(
-                              onPressed: () => context.go(AppRouter.guardias),
-                              child: const Text('Ver todas'),
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: 16),
-                        ...guardiasState.guardias
-                            .where((g) => g.startTime.isAfter(DateTime.now()))
-                            .take(3)
-                            .map((guardia) => _buildGuardiaCard(guardia)),
-                      ],
-                    ),
-                  ),
-              ],
+              ),
             ),
-          ),
+
+            const SizedBox(height: 24),
+
+            // Estadísticas rápidas
+            FadeInUp(
+              duration: const Duration(milliseconds: 800),
+              delay: const Duration(milliseconds: 200),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: _buildStatCard(
+                      'Total Guardias',
+                      '${guardiasState.guardias.length}',
+                      Icons.security,
+                      AppTheme.primaryBlue,
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: _buildStatCard(
+                      'Planificadas',
+                      '${guardiasState.guardias.where((g) => g.status == GuardiaStatus.planificada).length}',
+                      Icons.schedule,
+                      AppTheme.lightBlue,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+
+            const SizedBox(height: 12),
+
+            FadeInUp(
+              duration: const Duration(milliseconds: 800),
+              delay: const Duration(milliseconds: 300),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: _buildStatCard(
+                      'Pendientes',
+                      '${guardiasState.guardias.where((g) => g.status == GuardiaStatus.pendiente).length}',
+                      Icons.pending,
+                      AppTheme.warningOrange,
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: _buildStatCard(
+                      'Realizadas',
+                      '${guardiasState.guardias.where((g) => g.status == GuardiaStatus.realizada).length}',
+                      Icons.check_circle,
+                      AppTheme.successGreen,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+
+            // Estadística especial para admins
+            if (isAdmin) ...[
+              const SizedBox(height: 12),
+              FadeInUp(
+                duration: const Duration(milliseconds: 800),
+                delay: const Duration(milliseconds: 400),
+                child: _buildStatCard(
+                  'Pendientes de Confirmar',
+                  '${_getGuardiasPendientesConfirmar(guardiasState.guardias)}',
+                  Icons.how_to_reg,
+                  AppTheme.warningOrange,
+                  fullWidth: true,
+                ),
+              ),
+            ],
+
+            const SizedBox(height: 24),
+
+            // Acciones rápidas
+            FadeInUp(
+              duration: const Duration(milliseconds: 800),
+              delay: const Duration(milliseconds: 500),
+              child: const Text(
+                'Acciones Rápidas',
+                style: TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                  color: AppTheme.primaryBlue,
+                ),
+              ),
+            ),
+
+            const SizedBox(height: 16),
+
+            FadeInUp(
+              duration: const Duration(milliseconds: 800),
+              delay: const Duration(milliseconds: 600),
+              child: GridView.count(
+                shrinkWrap: true,
+                physics: const NeverScrollableScrollPhysics(),
+                crossAxisCount: 2,
+                crossAxisSpacing: 12,
+                mainAxisSpacing: 12,
+                childAspectRatio: 1.2,
+                children: [
+                  _buildActionCard(
+                    'Ver Guardias',
+                    Icons.security,
+                    AppTheme.primaryBlue,
+                    () => context.go(AppRouter.guardias),
+                  ),
+                  _buildActionCard(
+                    'Nueva Guardia',
+                    Icons.add_circle,
+                    AppTheme.successGreen,
+                    () => context.go(AppRouter.createGuardia),
+                  ),
+                  _buildActionCard(
+                    'Incidencias',
+                    Icons.report_problem,
+                    AppTheme.warningOrange,
+                    () => context.go(AppRouter.incidents),
+                  ),
+                  _buildActionCard(
+                    'Mi Perfil',
+                    Icons.person,
+                    AppTheme.lightBlue,
+                    () => context.go(AppRouter.profile),
+                  ),
+                ],
+              ),
+            ),
+
+            const SizedBox(height: 24),
+
+            // Guardias que requieren confirmación (solo para admins)
+            if (isAdmin &&
+                _getGuardiasPendientesConfirmar(guardiasState.guardias) >
+                    0) ...[
+              FadeInUp(
+                duration: const Duration(milliseconds: 800),
+                delay: const Duration(milliseconds: 700),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    const Text(
+                      'Requieren Confirmación',
+                      style: TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                        color: AppTheme.primaryBlue,
+                      ),
+                    ),
+                    TextButton(
+                      onPressed: () => context.go(AppRouter.guardias),
+                      child: const Text('Ver todas'),
+                    ),
+                  ],
+                ),
+              ),
+
+              const SizedBox(height: 16),
+
+              FadeInUp(
+                duration: const Duration(milliseconds: 800),
+                delay: const Duration(milliseconds: 800),
+                child: ListView.builder(
+                  shrinkWrap: true,
+                  physics: const NeverScrollableScrollPhysics(),
+                  itemCount: _getGuardiasConPendientes(
+                    guardiasState.guardias,
+                  ).take(3).length,
+                  itemBuilder: (context, index) {
+                    final guardia = _getGuardiasConPendientes(
+                      guardiasState.guardias,
+                    ).elementAt(index);
+                    return _buildGuardiaPreviewWithAction(guardia);
+                  },
+                ),
+              ),
+            ] else if (guardiasState.guardias.isNotEmpty) ...[
+              // Guardias recientes (para no admins o cuando no hay pendientes)
+              FadeInUp(
+                duration: const Duration(milliseconds: 800),
+                delay: const Duration(milliseconds: 700),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    const Text(
+                      'Guardias Recientes',
+                      style: TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                        color: AppTheme.primaryBlue,
+                      ),
+                    ),
+                    TextButton(
+                      onPressed: () => context.go(AppRouter.guardias),
+                      child: const Text('Ver todas'),
+                    ),
+                  ],
+                ),
+              ),
+
+              const SizedBox(height: 16),
+
+              FadeInUp(
+                duration: const Duration(milliseconds: 800),
+                delay: const Duration(milliseconds: 800),
+                child: ListView.builder(
+                  shrinkWrap: true,
+                  physics: const NeverScrollableScrollPhysics(),
+                  itemCount: guardiasState.guardias.take(3).length,
+                  itemBuilder: (context, index) {
+                    final guardia = guardiasState.guardias[index];
+                    return _buildGuardiaPreview(guardia);
+                  },
+                ),
+              ),
+            ],
+          ],
         ),
       ),
     );
@@ -253,9 +348,11 @@ class _HomePageState extends ConsumerState<HomePage> {
     String title,
     String value,
     IconData icon,
-    Color color,
-  ) {
+    Color color, {
+    bool fullWidth = false,
+  }) {
     return Container(
+      width: fullWidth ? double.infinity : null,
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: Colors.white,
@@ -270,7 +367,7 @@ class _HomePageState extends ConsumerState<HomePage> {
       ),
       child: Column(
         children: [
-          Icon(icon, color: color, size: 32),
+          Icon(icon, size: 32, color: color),
           const SizedBox(height: 8),
           Text(
             value,
@@ -283,7 +380,7 @@ class _HomePageState extends ConsumerState<HomePage> {
           const SizedBox(height: 4),
           Text(
             title,
-            style: const TextStyle(fontSize: 12, color: Colors.grey),
+            style: TextStyle(fontSize: 12, color: Colors.grey[600]),
             textAlign: TextAlign.center,
           ),
         ],
@@ -297,8 +394,9 @@ class _HomePageState extends ConsumerState<HomePage> {
     Color color,
     VoidCallback onTap,
   ) {
-    return GestureDetector(
+    return InkWell(
       onTap: onTap,
+      borderRadius: BorderRadius.circular(12),
       child: Container(
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
@@ -315,14 +413,14 @@ class _HomePageState extends ConsumerState<HomePage> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(icon, color: color, size: 40),
-            const SizedBox(height: 12),
+            Icon(icon, size: 32, color: color),
+            const SizedBox(height: 8),
             Text(
               title,
               style: TextStyle(
                 fontSize: 14,
                 fontWeight: FontWeight.w600,
-                color: color,
+                color: Colors.grey[800],
               ),
               textAlign: TextAlign.center,
             ),
@@ -332,7 +430,7 @@ class _HomePageState extends ConsumerState<HomePage> {
     );
   }
 
-  Widget _buildGuardiaCard(guardia) {
+  Widget _buildGuardiaPreview(Guardia guardia) {
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
       padding: const EdgeInsets.all(16),
@@ -350,11 +448,15 @@ class _HomePageState extends ConsumerState<HomePage> {
       child: Row(
         children: [
           Container(
-            width: 4,
-            height: 40,
+            padding: const EdgeInsets.all(8),
             decoration: BoxDecoration(
-              color: _getStatusColor(guardia.status.name),
-              borderRadius: BorderRadius.circular(2),
+              color: _getStatusColor(guardia.status),
+              borderRadius: BorderRadius.circular(8),
+            ),
+            child: Icon(
+              _getStatusIcon(guardia.status),
+              color: Colors.white,
+              size: 20,
             ),
           ),
           const SizedBox(width: 12),
@@ -363,16 +465,16 @@ class _HomePageState extends ConsumerState<HomePage> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  guardia.location,
+                  'Guardia #${guardia.id}',
                   style: const TextStyle(
                     fontSize: 16,
-                    fontWeight: FontWeight.w600,
+                    fontWeight: FontWeight.bold,
                   ),
                 ),
                 const SizedBox(height: 4),
                 Text(
-                  '${_formatDateTime(guardia.startTime)} - ${_formatDateTime(guardia.endTime)}',
-                  style: const TextStyle(fontSize: 14, color: Colors.grey),
+                  _formatDateTime(guardia.startTime),
+                  style: TextStyle(fontSize: 12, color: Colors.grey[600]),
                 ),
               ],
             ),
@@ -380,15 +482,15 @@ class _HomePageState extends ConsumerState<HomePage> {
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
             decoration: BoxDecoration(
-              color: _getStatusColor(guardia.status.name).withOpacity(0.1),
+              color: _getStatusColor(guardia.status),
               borderRadius: BorderRadius.circular(8),
             ),
             child: Text(
-              _getStatusText(guardia.status.name),
-              style: TextStyle(
-                fontSize: 12,
-                fontWeight: FontWeight.w500,
-                color: _getStatusColor(guardia.status.name),
+              guardia.statusText,
+              style: const TextStyle(
+                color: Colors.white,
+                fontSize: 10,
+                fontWeight: FontWeight.w600,
               ),
             ),
           ),
@@ -397,33 +499,124 @@ class _HomePageState extends ConsumerState<HomePage> {
     );
   }
 
-  Color _getStatusColor(String status) {
+  Widget _buildGuardiaPreviewWithAction(Guardia guardia) {
+    return Container(
+      margin: const EdgeInsets.only(bottom: 12),
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: AppTheme.warningOrange.withOpacity(0.3)),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.05),
+            blurRadius: 10,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
+      child: Column(
+        children: [
+          Row(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  color: _getStatusColor(guardia.status),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Icon(
+                  _getStatusIcon(guardia.status),
+                  color: Colors.white,
+                  size: 20,
+                ),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Guardia #${guardia.id}',
+                      style: const TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      _formatDateTime(guardia.startTime),
+                      style: TextStyle(fontSize: 12, color: Colors.grey[600]),
+                    ),
+                  ],
+                ),
+              ),
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                decoration: BoxDecoration(
+                  color: AppTheme.warningOrange,
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Text(
+                  '${guardia.cantidadPendientes} sin confirmar',
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontSize: 10,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 12),
+          SizedBox(
+            width: double.infinity,
+            child: ElevatedButton.icon(
+              onPressed: () => context.go(AppRouter.guardias),
+              icon: const Icon(Icons.how_to_reg, size: 16),
+              label: const Text('Confirmar Asistencia'),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: AppTheme.warningOrange,
+                foregroundColor: Colors.white,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  int _getGuardiasPendientesConfirmar(List<Guardia> guardias) {
+    return guardias.where((g) => g.tieneUsuariosPendientes).length;
+  }
+
+  Iterable<Guardia> _getGuardiasConPendientes(List<Guardia> guardias) {
+    return guardias.where((g) => g.tieneUsuariosPendientes);
+  }
+
+  Color _getStatusColor(GuardiaStatus status) {
     switch (status) {
-      case 'planificada':
-        return AppTheme.warningOrange;
-      case 'realizada':
+      case GuardiaStatus.planificada:
+        return AppTheme.primaryBlue;
+      case GuardiaStatus.realizada:
         return AppTheme.successGreen;
-      case 'pendiente':
-        return AppTheme.errorRed;
-      default:
-        return Colors.grey;
+      case GuardiaStatus.pendiente:
+        return AppTheme.warningOrange;
     }
   }
 
-  String _getStatusText(String status) {
+  IconData _getStatusIcon(GuardiaStatus status) {
     switch (status) {
-      case 'planificada':
-        return 'Planificada';
-      case 'realizada':
-        return 'Realizada';
-      case 'pendiente':
-        return 'Pendiente';
-      default:
-        return 'Desconocido';
+      case GuardiaStatus.planificada:
+        return Icons.schedule;
+      case GuardiaStatus.realizada:
+        return Icons.check_circle;
+      case GuardiaStatus.pendiente:
+        return Icons.pending;
     }
   }
 
   String _formatDateTime(DateTime dateTime) {
-    return '${dateTime.day}/${dateTime.month} ${dateTime.hour}:${dateTime.minute.toString().padLeft(2, '0')}';
+    return '${dateTime.day}/${dateTime.month}/${dateTime.year} ${dateTime.hour}:${dateTime.minute.toString().padLeft(2, '0')}';
   }
 }

@@ -1,4 +1,3 @@
-import 'package:animate_do/animate_do.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
@@ -115,200 +114,200 @@ class _MapPageState extends ConsumerState<MapPage> {
           ),
         ],
       ),
-      body: Stack(
+      body: const Stack(
         children: [
-          GoogleMap(
-            onMapCreated: (GoogleMapController controller) {
-              _mapController = controller;
-            },
-            initialCameraPosition: const CameraPosition(
-              target: _uciCenter,
-              zoom: 16.0,
-            ),
-            markers: _markers,
-            polygons: _polygons,
-            mapType: MapType.hybrid,
-            myLocationEnabled: true,
-            myLocationButtonEnabled: false,
-            zoomControlsEnabled: false,
-          ),
+          // GoogleMap(
+          //   onMapCreated: (GoogleMapController controller) {
+          //     _mapController = controller;
+          //   },
+          //   initialCameraPosition: const CameraPosition(
+          //     target: _uciCenter,
+          //     zoom: 16.0,
+          //   ),
+          //   markers: _markers,
+          //   polygons: _polygons,
+          //   mapType: MapType.hybrid,
+          //   myLocationEnabled: true,
+          //   myLocationButtonEnabled: false,
+          //   zoomControlsEnabled: false,
+          // ),
 
           // Panel de información
-          Positioned(
-            top: 16,
-            left: 16,
-            right: 16,
-            child: FadeInDown(
-              duration: const Duration(milliseconds: 800),
-              child: Container(
-                padding: const EdgeInsets.all(16),
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(12),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withOpacity(0.1),
-                      blurRadius: 10,
-                      offset: const Offset(0, 2),
-                    ),
-                  ],
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const Text(
-                      'Puntos de Guardia UCI',
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                        color: AppTheme.primaryBlue,
-                      ),
-                    ),
-                    const SizedBox(height: 8),
-                    Row(
-                      children: [
-                        _buildLegendItem(Colors.green, 'Activos'),
-                        const SizedBox(width: 16),
-                        _buildLegendItem(Colors.red, 'Inactivos'),
-                      ],
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ),
+          // Positioned(
+          //   top: 16,
+          //   left: 16,
+          //   right: 16,
+          //   child: FadeInDown(
+          //     duration: const Duration(milliseconds: 800),
+          //     child: Container(
+          //       padding: const EdgeInsets.all(16),
+          //       decoration: BoxDecoration(
+          //         color: Colors.white,
+          //         borderRadius: BorderRadius.circular(12),
+          //         boxShadow: [
+          //           BoxShadow(
+          //             color: Colors.black.withOpacity(0.1),
+          //             blurRadius: 10,
+          //             offset: const Offset(0, 2),
+          //           ),
+          //         ],
+          //       ),
+          //       child: Column(
+          //         crossAxisAlignment: CrossAxisAlignment.start,
+          //         children: [
+          //           const Text(
+          //             'Puntos de Guardia UCI',
+          //             style: TextStyle(
+          //               fontSize: 16,
+          //               fontWeight: FontWeight.bold,
+          //               color: AppTheme.primaryBlue,
+          //             ),
+          //           ),
+          //           const SizedBox(height: 8),
+          //           Row(
+          //             children: [
+          //               _buildLegendItem(Colors.green, 'Activos'),
+          //               const SizedBox(width: 16),
+          //               _buildLegendItem(Colors.red, 'Inactivos'),
+          //             ],
+          //           ),
+          //         ],
+          //       ),
+          //     ),
+          //   ),
+          // ),
 
-          // Botones de control
-          Positioned(
-            bottom: 100,
-            right: 16,
-            child: FadeInUp(
-              duration: const Duration(milliseconds: 800),
-              child: Column(
-                children: [
-                  FloatingActionButton(
-                    heroTag: 'zoom_in',
-                    onPressed: () => _zoomIn(),
-                    backgroundColor: Colors.white,
-                    foregroundColor: AppTheme.primaryBlue,
-                    mini: true,
-                    child: const Icon(Icons.zoom_in),
-                  ),
-                  const SizedBox(height: 8),
-                  FloatingActionButton(
-                    heroTag: 'zoom_out',
-                    onPressed: () => _zoomOut(),
-                    backgroundColor: Colors.white,
-                    foregroundColor: AppTheme.primaryBlue,
-                    mini: true,
-                    child: const Icon(Icons.zoom_out),
-                  ),
-                  const SizedBox(height: 8),
-                  FloatingActionButton(
-                    heroTag: 'my_location',
-                    onPressed: () => _goToMyLocation(),
-                    backgroundColor: Colors.white,
-                    foregroundColor: AppTheme.primaryBlue,
-                    mini: true,
-                    child: const Icon(Icons.my_location),
-                  ),
-                ],
-              ),
-            ),
-          ),
+          // // Botones de control
+          // Positioned(
+          //   bottom: 100,
+          //   right: 16,
+          //   child: FadeInUp(
+          //     duration: const Duration(milliseconds: 800),
+          //     child: Column(
+          //       children: [
+          //         FloatingActionButton(
+          //           heroTag: 'zoom_in',
+          //           onPressed: () => _zoomIn(),
+          //           backgroundColor: Colors.white,
+          //           foregroundColor: AppTheme.primaryBlue,
+          //           mini: true,
+          //           child: const Icon(Icons.zoom_in),
+          //         ),
+          //         const SizedBox(height: 8),
+          //         FloatingActionButton(
+          //           heroTag: 'zoom_out',
+          //           onPressed: () => _zoomOut(),
+          //           backgroundColor: Colors.white,
+          //           foregroundColor: AppTheme.primaryBlue,
+          //           mini: true,
+          //           child: const Icon(Icons.zoom_out),
+          //         ),
+          //         const SizedBox(height: 8),
+          //         FloatingActionButton(
+          //           heroTag: 'my_location',
+          //           onPressed: () => _goToMyLocation(),
+          //           backgroundColor: Colors.white,
+          //           foregroundColor: AppTheme.primaryBlue,
+          //           mini: true,
+          //           child: const Icon(Icons.my_location),
+          //         ),
+          //       ],
+          //     ),
+          //   ),
+          // ),
 
-          // Lista de puntos de guardia
-          Positioned(
-            bottom: 16,
-            left: 16,
-            right: 16,
-            child: FadeInUp(
-              duration: const Duration(milliseconds: 800),
-              delay: const Duration(milliseconds: 200),
-              child: SizedBox(
-                height: 120,
-                child: ListView.builder(
-                  scrollDirection: Axis.horizontal,
-                  itemCount: _guardPoints.length,
-                  itemBuilder: (context, index) {
-                    final point = _guardPoints[index];
-                    return Container(
-                      width: 200,
-                      margin: const EdgeInsets.only(right: 12),
-                      padding: const EdgeInsets.all(12),
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(12),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.black.withOpacity(0.1),
-                            blurRadius: 10,
-                            offset: const Offset(0, 2),
-                          ),
-                        ],
-                      ),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Row(
-                            children: [
-                              Container(
-                                width: 12,
-                                height: 12,
-                                decoration: BoxDecoration(
-                                  color: point.isActive
-                                      ? Colors.green
-                                      : Colors.red,
-                                  shape: BoxShape.circle,
-                                ),
-                              ),
-                              const SizedBox(width: 8),
-                              Expanded(
-                                child: Text(
-                                  point.name,
-                                  style: const TextStyle(
-                                    fontSize: 14,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                  maxLines: 1,
-                                  overflow: TextOverflow.ellipsis,
-                                ),
-                              ),
-                            ],
-                          ),
-                          const SizedBox(height: 8),
-                          Text(
-                            point.description,
-                            style: TextStyle(
-                              fontSize: 12,
-                              color: Colors.grey[600],
-                            ),
-                            maxLines: 2,
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                          const Spacer(),
-                          ElevatedButton(
-                            onPressed: () => _goToPoint(point),
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: AppTheme.primaryBlue,
-                              minimumSize: const Size(double.infinity, 32),
-                            ),
-                            child: const Text(
-                              'Ver en Mapa',
-                              style: TextStyle(
-                                fontSize: 12,
-                                color: Colors.white,
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    );
-                  },
-                ),
-              ),
-            ),
-          ),
+          // // Lista de puntos de guardia
+          // Positioned(
+          //   bottom: 16,
+          //   left: 16,
+          //   right: 16,
+          //   child: FadeInUp(
+          //     duration: const Duration(milliseconds: 800),
+          //     delay: const Duration(milliseconds: 200),
+          //     child: SizedBox(
+          //       height: 120,
+          //       child: ListView.builder(
+          //         scrollDirection: Axis.horizontal,
+          //         itemCount: _guardPoints.length,
+          //         itemBuilder: (context, index) {
+          //           final point = _guardPoints[index];
+          //           return Container(
+          //             width: 200,
+          //             margin: const EdgeInsets.only(right: 12),
+          //             padding: const EdgeInsets.all(12),
+          //             decoration: BoxDecoration(
+          //               color: Colors.white,
+          //               borderRadius: BorderRadius.circular(12),
+          //               boxShadow: [
+          //                 BoxShadow(
+          //                   color: Colors.black.withOpacity(0.1),
+          //                   blurRadius: 10,
+          //                   offset: const Offset(0, 2),
+          //                 ),
+          //               ],
+          //             ),
+          //             child: Column(
+          //               crossAxisAlignment: CrossAxisAlignment.start,
+          //               children: [
+          //                 Row(
+          //                   children: [
+          //                     Container(
+          //                       width: 12,
+          //                       height: 12,
+          //                       decoration: BoxDecoration(
+          //                         color: point.isActive
+          //                             ? Colors.green
+          //                             : Colors.red,
+          //                         shape: BoxShape.circle,
+          //                       ),
+          //                     ),
+          //                     const SizedBox(width: 8),
+          //                     Expanded(
+          //                       child: Text(
+          //                         point.name,
+          //                         style: const TextStyle(
+          //                           fontSize: 14,
+          //                           fontWeight: FontWeight.bold,
+          //                         ),
+          //                         maxLines: 1,
+          //                         overflow: TextOverflow.ellipsis,
+          //                       ),
+          //                     ),
+          //                   ],
+          //                 ),
+          //                 const SizedBox(height: 8),
+          //                 Text(
+          //                   point.description,
+          //                   style: TextStyle(
+          //                     fontSize: 12,
+          //                     color: Colors.grey[600],
+          //                   ),
+          //                   maxLines: 2,
+          //                   overflow: TextOverflow.ellipsis,
+          //                 ),
+          //                 const Spacer(),
+          //                 ElevatedButton(
+          //                   onPressed: () => _goToPoint(point),
+          //                   style: ElevatedButton.styleFrom(
+          //                     backgroundColor: AppTheme.primaryBlue,
+          //                     minimumSize: const Size(double.infinity, 32),
+          //                   ),
+          //                   child: const Text(
+          //                     'Ver en Mapa',
+          //                     style: TextStyle(
+          //                       fontSize: 12,
+          //                       color: Colors.white,
+          //                     ),
+          //                   ),
+          //                 ),
+          //               ],
+          //             ),
+          //           );
+          //         },
+          //       ),
+          //     ),
+          //   ),
+          // ),
         ],
       ),
     );

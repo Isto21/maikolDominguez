@@ -28,12 +28,12 @@ class GuardiasRepositoryImpl implements GuardiasRepository {
   }
 
   @override
-  Future<Either<Failure, Guardia>> createGuardia(
+  Future<Either<Failure, bool>> createGuardia(
     CreateGuardiaRequest request,
   ) async {
     try {
-      final guardia = await _apiClient.createGuardia(request);
-      return Right(guardia);
+      await _apiClient.createGuardia(request);
+      return const Right(true);
     } catch (e) {
       return Left(ServerFailure('Error al crear guardia: ${e.toString()}'));
     }
@@ -42,10 +42,10 @@ class GuardiasRepositoryImpl implements GuardiasRepository {
   @override
   Future<Either<Failure, Guardia>> updateGuardia(
     int id,
-    Map<String, dynamic> data,
+    UpdateGuardiaRequest request,
   ) async {
     try {
-      final guardia = await _apiClient.updateGuardia(id, data);
+      final guardia = await _apiClient.updateGuardia(id, request);
       return Right(guardia);
     } catch (e) {
       return Left(
@@ -61,6 +61,21 @@ class GuardiasRepositoryImpl implements GuardiasRepository {
       return const Right(null);
     } catch (e) {
       return Left(ServerFailure('Error al eliminar guardia: ${e.toString()}'));
+    }
+  }
+
+  @override
+  Future<Either<Failure, void>> confirmarAsistencia(
+    int guardiaId,
+    int usuarioId,
+  ) async {
+    try {
+      await _apiClient.confirmarAsistencia(guardiaId, usuarioId);
+      return const Right(null);
+    } catch (e) {
+      return Left(
+        ServerFailure('Error al confirmar asistencia: ${e.toString()}'),
+      );
     }
   }
 }

@@ -62,27 +62,23 @@ class GuardiasNotifier extends StateNotifier<GuardiasState> {
     state = state.copyWith(isLoading: true, error: null);
 
     final result = await _repository.createGuardia(request);
-
+    await loadGuardias();
     return result.fold(
       (failure) {
         state = state.copyWith(isLoading: false, error: failure.message);
         return false;
       },
       (guardia) {
-        state = state.copyWith(
-          isLoading: false,
-          guardias: [...state.guardias, guardia],
-          error: null,
-        );
+        state = state.copyWith(isLoading: false, error: null);
         return true;
       },
     );
   }
 
-  Future<bool> updateGuardia(int id, Map<String, dynamic> data) async {
+  Future<bool> updateGuardia(int id, UpdateGuardiaRequest request) async {
     state = state.copyWith(isLoading: true, error: null);
 
-    final result = await _repository.updateGuardia(id, data);
+    final result = await _repository.updateGuardia(id, request);
 
     return result.fold(
       (failure) {
@@ -123,6 +119,22 @@ class GuardiasNotifier extends StateNotifier<GuardiasState> {
           guardias: updatedGuardias,
           error: null,
         );
+        return true;
+      },
+    );
+  }
+
+  Future<bool> confirmarAsistencia(int guardiaId, int usuarioId) async {
+    final result = await _repository.confirmarAsistencia(guardiaId, usuarioId);
+
+    return result.fold(
+      (failure) {
+        state = state.copyWith(error: failure.message);
+        return false;
+      },
+      (_) {
+        // Recargar las guardias para obtener el estado actualizado desde el servidor
+        loadGuardias();
         return true;
       },
     );

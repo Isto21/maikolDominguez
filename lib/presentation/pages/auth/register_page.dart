@@ -208,7 +208,6 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
                               const SizedBox(width: 12),
                               Expanded(
                                 child: CustomTextField(
-                                  keyboardType: TextInputType.number,
                                   controller: _cardNumberController,
                                   label: 'Solapin',
                                   prefixIcon: Icons.credit_card_outlined,
@@ -281,8 +280,7 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
                                 child: CustomTextField(
                                   controller: _aptoController,
                                   label: 'Apartamento',
-                                  keyboardType: TextInputType.number,
-                                  prefixIcon: Icons.home_outlined,
+                                  prefixIcon: Icons.home_repair_service_sharp,
                                   enabled: !_isRegistering,
                                   validator: (value) {
                                     if (value == null || value.isEmpty) {
@@ -301,7 +299,9 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
                                   prefixIcon: Icons.group_outlined,
                                   enabled: !_isRegistering,
                                   validator: (value) {
-                                    if (value == null || value.isEmpty) {
+                                    if (value == null ||
+                                        value.isEmpty &&
+                                            _selectedRole == 'estudiante') {
                                       return 'Requerido';
                                     }
                                     return null;
@@ -453,7 +453,7 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
         email: _emailController.text.trim(),
         cardNumber: _cardNumberController.text.trim(),
         password: _passwordController.text,
-        role: _selectedRole,
+        role: _selectedRole.isEmpty ? ' ' : _selectedRole,
         apto: _aptoController.text.trim(),
         group: _groupController.text.trim(),
       );

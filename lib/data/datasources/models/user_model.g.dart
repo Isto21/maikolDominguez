@@ -94,3 +94,23 @@ Map<String, dynamic> _$IncidentToJson(Incident instance) => <String, dynamic>{
   'reported_at': instance.reportedAt.toIso8601String(),
   'resolved': instance.resolved,
 };
+ActivationRequest _$ActivationRequestFromJson(Map<String, dynamic> json) =>
+    ActivationRequest(
+      email: json['email'] as String,
+      activationCode: json['activationCode'] as String,
+    );
+
+Map<String, dynamic> _$ActivationRequestToJson(ActivationRequest instance) =>
+    <String, dynamic>{
+      'email': instance.email,
+      'activationCode': instance.activationCode,
+    };
+
+ActivationResponse _$ActivationResponseFromJson(Map<String, dynamic> json) =>
+    ActivationResponse(
+      message: json['message'] as String,
+      token: json['token'] as String?,
+    );
+
+Map<String, dynamic> _$ActivationResponseToJson(ActivationResponse instance) =>
+    <String, dynamic>{'message': instance.message, 'token': instance.token};

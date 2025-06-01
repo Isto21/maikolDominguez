@@ -24,7 +24,7 @@ class _CreateGuardiaPageState extends ConsumerState<CreateGuardiaPage> {
   DateTime _endDate = DateTime.now();
   TimeOfDay _endTime = TimeOfDay.now();
 
-  final List<String> _selectedUserIds = [];
+  final List<int> _selectedUserIds = [];
 
   @override
   void initState() {
@@ -344,7 +344,7 @@ class _CreateGuardiaPageState extends ConsumerState<CreateGuardiaPage> {
                             itemBuilder: (context, index) {
                               final user = usersState.users[index];
                               final isSelected = _selectedUserIds.contains(
-                                user.id.toString(),
+                                user.id,
                               );
 
                               return CheckboxListTile(
@@ -354,11 +354,9 @@ class _CreateGuardiaPageState extends ConsumerState<CreateGuardiaPage> {
                                 onChanged: (bool? value) {
                                   setState(() {
                                     if (value == true) {
-                                      _selectedUserIds.add(user.id.toString());
+                                      _selectedUserIds.add(user.id);
                                     } else {
-                                      _selectedUserIds.remove(
-                                        user.id.toString(),
-                                      );
+                                      _selectedUserIds.remove(user.id);
                                     }
                                   });
                                 },
@@ -499,7 +497,8 @@ class _CreateGuardiaPageState extends ConsumerState<CreateGuardiaPage> {
       _endTime.minute,
     );
 
-    if (endDateTime.isBefore(startDateTime)) {
+    if (endDateTime.isBefore(startDateTime) ||
+        endDateTime.isAtSameMomentAs(startDateTime)) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text(

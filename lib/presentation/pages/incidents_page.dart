@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:maikol_tesis/config/theme/app_theme.dart';
 import 'package:maikol_tesis/data/datasources/models/incident_model.dart';
+import 'package:maikol_tesis/presentation/providers/auth/auth_provider.dart';
 import 'package:maikol_tesis/presentation/providers/guardias/guardias_provider.dart';
 import 'package:maikol_tesis/presentation/providers/incidents/incidents_provider.dart';
 import 'package:maikol_tesis/presentation/widgets/shared/custom_text_field.dart';
@@ -368,7 +369,7 @@ class _IncidentsPageState extends ConsumerState<IncidentsPage>
                     return DropdownMenuItem(
                       value: guardia.id,
                       child: Text(
-                        '${guardia.location} - ${_formatDateTime(guardia.startTime)}',
+                        '${guardia.statusText} - ${_formatDateTime(guardia.startTime)}',
                       ),
                     );
                   }).toList(),
@@ -399,9 +400,10 @@ class _IncidentsPageState extends ConsumerState<IncidentsPage>
                     selectedGuardiaId != null) {
                   final request = CreateIncidentRequest(
                     guardiaId: selectedGuardiaId!,
-                    title: titleController.text,
+                    userId: ref.read(authProvider).user!.id,
+                    // title: titleController.text,
                     description: descriptionController.text,
-                    severity: selectedSeverity,
+                    // severity: selectedSeverity,
                   );
 
                   final success = await ref
@@ -415,7 +417,7 @@ class _IncidentsPageState extends ConsumerState<IncidentsPage>
                         content: Text(
                           success
                               ? 'Incidencia reportada exitosamente'
-                              : 'Error al reportar incidencia',
+                              : 'Usted no puede reportar en esta guardia',
                         ),
                         backgroundColor: success
                             ? AppTheme.successGreen
