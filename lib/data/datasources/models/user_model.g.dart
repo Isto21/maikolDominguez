@@ -7,7 +7,7 @@ part of 'user_model.dart';
 // **************************************************************************
 
 User _$UserFromJson(Map<String, dynamic> json) => User(
-  id: (json['id'] as num).toInt(),
+  id: json['id'] as int,
   firstName: json['name'] as String,
   lastName: json['lastName'] as String?,
   email: json['email'] as String?,
@@ -36,32 +36,32 @@ LoginResponse _$LoginResponseFromJson(Map<String, dynamic> json) =>
     LoginResponse(token: json['data']['token'] as String);
 
 Map<String, dynamic> _$LoginResponseToJson(LoginResponse instance) =>
-    <String, dynamic>{'token': instance.token, 'token_type': instance.user};
+    <String, dynamic>{'token': instance.token, 'user': instance.user?.toJson()};
 
 RegisterRequest _$RegisterRequestFromJson(Map<String, dynamic> json) =>
     RegisterRequest(
-      password: json['password'] as String,
-      apto: json['apto'] as String?,
-      group: json['group'] as String?,
-      role: json['role'] as String?,
       name: json['name'] as String,
       lastName: json['lastName'] as String,
-      ci: json['ci'] as String?,
-      email: json['email'] as String?,
-      cardNumber: json['cardNumber'] as String?,
+      ci: json['ci'] as String,
+      email: json['email'] as String,
+      cardNumber: json['cardNumber'] as String,
+      password: json['password'] as String,
+      role: json['role'] as String,
+      apto: json['apto'] as String,
+      group: json['group'] as String,
     );
 
 Map<String, dynamic> _$RegisterRequestToJson(RegisterRequest instance) =>
     <String, dynamic>{
-      'password': instance.password,
-      'lastName': instance.lastName,
-      'email': instance.email,
-      'role': instance.role,
-      'ci': instance.ci,
       'name': instance.name,
+      'lastName': instance.lastName,
+      'ci': instance.ci,
+      'email': instance.email,
       'cardNumber': instance.cardNumber,
-      'group': instance.group,
+      'password': instance.password,
+      'role': instance.role,
       'apto': instance.apto,
+      'group': instance.group,
     };
 
 RegisterResponse _$RegisterResponseFromJson(Map<String, dynamic> json) =>
@@ -77,12 +77,14 @@ Map<String, dynamic> _$RegisterResponseToJson(RegisterResponse instance) =>
 
 Incident _$IncidentFromJson(Map<String, dynamic> json) => Incident(
   id: (json['id'] as num).toInt(),
-  guardiaId: (json['guardia_id'] as num).toInt(),
-  title: json['title'] as String,
+  guardiaId: (json['guardia_id'] as num?)?.toInt(),
+  title: json['title'] as String?,
   description: json['description'] as String,
-  severity: json['severity'] as String,
-  reportedAt: DateTime.parse(json['reported_at'] as String),
-  resolved: json['resolved'] as bool,
+  severity: json['severity'] as String?,
+  reportedAt: json['reported_at'] != null
+      ? DateTime.parse(json['reported_at'] as String)
+      : null,
+  resolved: json['resolved'] as bool?,
 );
 
 Map<String, dynamic> _$IncidentToJson(Incident instance) => <String, dynamic>{
@@ -91,9 +93,36 @@ Map<String, dynamic> _$IncidentToJson(Incident instance) => <String, dynamic>{
   'title': instance.title,
   'description': instance.description,
   'severity': instance.severity,
-  'reported_at': instance.reportedAt.toIso8601String(),
+  'reported_at': instance.reportedAt?.toIso8601String(),
   'resolved': instance.resolved,
 };
+
+UpdateUserRequest _$UpdateUserRequestFromJson(Map<String, dynamic> json) =>
+    UpdateUserRequest(
+      name: json['name'] as String?,
+      lastName: json['lastName'] as String?,
+      email: json['email'] as String?,
+      role: json['role'] as String?,
+      apto: json['apto'] as String?,
+      group: json['group'] as String?,
+      cardNumber: json['cardNumber'] as String?,
+      ci: json['ci'] as String?,
+      activationCode: json['activationCode'] as Map<String, dynamic>?,
+    );
+
+Map<String, dynamic> _$UpdateUserRequestToJson(UpdateUserRequest instance) =>
+    <String, dynamic>{
+      'name': instance.name,
+      'lastName': instance.lastName,
+      'email': instance.email,
+      'role': instance.role,
+      'apto': instance.apto,
+      'group': instance.group,
+      'cardNumber': instance.cardNumber,
+      'ci': instance.ci,
+      'activationCode': instance.activationCode,
+    };
+
 ActivationRequest _$ActivationRequestFromJson(Map<String, dynamic> json) =>
     ActivationRequest(
       email: json['email'] as String,

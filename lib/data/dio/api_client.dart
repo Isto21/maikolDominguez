@@ -35,10 +35,13 @@ abstract class ApiClient {
   Future<User> getUserById(@Path('id') int id);
 
   @PUT('/api/user/{id}')
-  Future<User> updateUser(
+  Future<void> updateUser(
     @Path('id') int id,
     @Body() Map<String, dynamic> data,
   );
+
+  @DELETE('/api/user/{id}')
+  Future<void> deleteAccount(@Path('id') int id);
 
   // Guardia endpoints
   @GET('/api/guardia')

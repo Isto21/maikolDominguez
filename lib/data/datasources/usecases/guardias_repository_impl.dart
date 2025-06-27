@@ -16,13 +16,18 @@ class GuardiasRepositoryImpl implements GuardiasRepository {
     int? studentId,
   }) async {
     try {
+      print('🛡️ GuardiasRepositoryImpl - Haciendo petición a /api/guardia');
       final guardias = await _apiClient.getGuardias(
         month: month,
         year: year,
         studentId: studentId,
       );
+      print(
+        '🛡️ GuardiasRepositoryImpl - Petición exitosa, ${guardias?.length ?? 0} guardias recibidas',
+      );
       return Right(guardias);
     } catch (e) {
+      print('🛡️ GuardiasRepositoryImpl - Error en petición: $e');
       return Left(ServerFailure('Error al cargar guardias: ${e.toString()}'));
     }
   }

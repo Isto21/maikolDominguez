@@ -13,4 +13,6 @@ abstract class AuthRepository {
   Future<bool> hasValidToken();
   Future<void> logout();
   Future<void> clearToken();
+  Future<Either<Failure, bool>> updateProfile(UpdateUserRequest request);
+  Future<Either<Failure, bool>> deleteAccount();
 }

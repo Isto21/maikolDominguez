@@ -61,7 +61,7 @@ class _HomePageState extends ConsumerState<HomePage> {
                           radius: 25,
                           backgroundColor: Colors.white,
                           child: Text(
-                            user?.firstName.substring(0, 1).toUpperCase() ??
+                            user?.firstName?.substring(0, 1).toUpperCase() ??
                                 'U',
                             style: const TextStyle(
                               fontSize: 20,

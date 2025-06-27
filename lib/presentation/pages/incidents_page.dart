@@ -86,10 +86,14 @@ class _IncidentsPageState extends ConsumerState<IncidentsPage>
               children: [
                 _buildIncidentsList(incidentsState.incidents),
                 _buildIncidentsList(
-                  incidentsState.incidents.where((i) => !i.resolved).toList(),
+                  incidentsState.incidents
+                      .where((i) => !(i.resolved ?? false))
+                      .toList(),
                 ),
                 _buildIncidentsList(
-                  incidentsState.incidents.where((i) => i.resolved).toList(),
+                  incidentsState.incidents
+                      .where((i) => (i.resolved) ?? false)
+                      .toList(),
                 ),
               ],
             ),
@@ -165,7 +169,9 @@ class _IncidentsPageState extends ConsumerState<IncidentsPage>
           Container(
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
-              color: _getSeverityColor(incident.severity).withOpacity(0.1),
+              color: _getSeverityColor(
+                incident.severity ?? 'baja',
+              ).withOpacity(0.1),
               borderRadius: const BorderRadius.only(
                 topLeft: Radius.circular(16),
                 topRight: Radius.circular(16),
@@ -176,11 +182,11 @@ class _IncidentsPageState extends ConsumerState<IncidentsPage>
                 Container(
                   padding: const EdgeInsets.all(8),
                   decoration: BoxDecoration(
-                    color: _getSeverityColor(incident.severity),
+                    color: _getSeverityColor(incident.severity ?? 'baja'),
                     borderRadius: BorderRadius.circular(8),
                   ),
                   child: Icon(
-                    _getSeverityIcon(incident.severity),
+                    _getSeverityIcon(incident.severity ?? 'baja'),
                     color: Colors.white,
                     size: 20,
                   ),
@@ -191,7 +197,7 @@ class _IncidentsPageState extends ConsumerState<IncidentsPage>
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        incident.title,
+                        incident.title ?? 'Sin título',
                         style: const TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.bold,
@@ -199,7 +205,7 @@ class _IncidentsPageState extends ConsumerState<IncidentsPage>
                       ),
                       const SizedBox(height: 4),
                       Text(
-                        _formatDateTime(incident.reportedAt),
+                        _formatDateTime(incident.reportedAt ?? DateTime.now()),
                         style: TextStyle(fontSize: 12, color: Colors.grey[600]),
                       ),
                     ],
@@ -213,11 +219,11 @@ class _IncidentsPageState extends ConsumerState<IncidentsPage>
                         vertical: 4,
                       ),
                       decoration: BoxDecoration(
-                        color: _getSeverityColor(incident.severity),
+                        color: _getSeverityColor(incident.severity ?? 'baja'),
                         borderRadius: BorderRadius.circular(12),
                       ),
                       child: Text(
-                        _getSeverityText(incident.severity),
+                        _getSeverityText(incident.severity ?? 'baja'),
                         style: const TextStyle(
                           color: Colors.white,
                           fontSize: 10,
@@ -232,13 +238,13 @@ class _IncidentsPageState extends ConsumerState<IncidentsPage>
                         vertical: 4,
                       ),
                       decoration: BoxDecoration(
-                        color: incident.resolved
+                        color: (incident.resolved ?? false)
                             ? AppTheme.successGreen
                             : AppTheme.warningOrange,
                         borderRadius: BorderRadius.circular(12),
                       ),
                       child: Text(
-                        incident.resolved ? 'Resuelta' : 'Pendiente',
+                        (incident.resolved ?? false) ? 'Resuelta' : 'Pendiente',
                         style: const TextStyle(
                           color: Colors.white,
                           fontSize: 10,
@@ -436,58 +442,54 @@ class _IncidentsPageState extends ConsumerState<IncidentsPage>
   }
 
   void _showEditIncidentDialog(Incident incident) {
+    final scaffoldMessenger = ScaffoldMessenger.of(context);
+    final descriptionController = TextEditingController(
+      text: incident.description,
+    );
+
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Cambiar Estado'),
+        title: const Text('Editar Incidencia'),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            RadioListTile<bool>(
-              title: const Text('Pendiente'),
-              value: false,
-              groupValue: incident.resolved,
-              onChanged: (value) async {
-                Navigator.pop(context);
-                final request = UpdateIncidentRequest(resolved: false);
-                final success = await ref
-                    .read(incidentsProvider.notifier)
-                    .updateIncident(incident.id, request);
-
-                if (mounted) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                      content: Text(
-                        success
-                            ? 'Estado actualizado a Pendiente'
-                            : 'Error al actualizar estado',
-                      ),
-                      backgroundColor: success
-                          ? AppTheme.warningOrange
-                          : AppTheme.errorRed,
-                    ),
-                  );
+            CustomTextField(
+              controller: descriptionController,
+              label: 'Descripción',
+              maxLines: 3,
+              validator: (value) {
+                if (value == null || value.isEmpty) {
+                  return 'Por favor ingrese una descripción';
                 }
+                return null;
               },
             ),
-            RadioListTile<bool>(
-              title: const Text('Resuelta'),
-              value: true,
-              groupValue: incident.resolved,
-              onChanged: (value) async {
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Cancelar'),
+          ),
+          ElevatedButton(
+            onPressed: () async {
+              if (descriptionController.text.isNotEmpty) {
                 Navigator.pop(context);
-                final request = UpdateIncidentRequest(resolved: true);
+                final request = UpdateIncidentRequest(
+                  description: descriptionController.text,
+                );
                 final success = await ref
                     .read(incidentsProvider.notifier)
                     .updateIncident(incident.id, request);
 
                 if (mounted) {
-                  ScaffoldMessenger.of(context).showSnackBar(
+                  scaffoldMessenger.showSnackBar(
                     SnackBar(
                       content: Text(
                         success
-                            ? 'Estado actualizado a Resuelta'
-                            : 'Error al actualizar estado',
+                            ? 'Incidencia actualizada correctamente'
+                            : 'Error al actualizar la incidencia',
                       ),
                       backgroundColor: success
                           ? AppTheme.successGreen
@@ -495,10 +497,11 @@ class _IncidentsPageState extends ConsumerState<IncidentsPage>
                     ),
                   );
                 }
-              },
-            ),
-          ],
-        ),
+              }
+            },
+            child: const Text('Guardar'),
+          ),
+        ],
       ),
     );
   }
@@ -519,23 +522,36 @@ class _IncidentsPageState extends ConsumerState<IncidentsPage>
           ElevatedButton(
             onPressed: () async {
               Navigator.pop(context);
-              final success = await ref
-                  .read(incidentsProvider.notifier)
-                  .deleteIncident(incident.id);
-
-              if (mounted) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: Text(
-                      success
-                          ? 'Incidencia eliminada correctamente'
-                          : 'Error al eliminar incidencia',
+              String? errorMsg;
+              try {
+                final success = await ref
+                    .read(incidentsProvider.notifier)
+                    .deleteIncident(incident.id);
+                if (mounted) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text(
+                        success
+                            ? 'Incidencia eliminada correctamente'
+                            : (ref.read(incidentsProvider).error ??
+                                  'Error al eliminar incidencia'),
+                      ),
+                      backgroundColor: success
+                          ? AppTheme.successGreen
+                          : AppTheme.errorRed,
                     ),
-                    backgroundColor: success
-                        ? AppTheme.successGreen
-                        : AppTheme.errorRed,
-                  ),
-                );
+                  );
+                }
+              } catch (e) {
+                errorMsg = e.toString();
+                if (mounted) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text(errorMsg),
+                      backgroundColor: AppTheme.errorRed,
+                    ),
+                  );
+                }
               }
             },
             style: ElevatedButton.styleFrom(backgroundColor: AppTheme.errorRed),

@@ -206,14 +206,14 @@ class _ApiClient implements ApiClient {
   }
 
   @override
-  Future<User> updateUser(int id, Map<String, dynamic> data) async {
+  Future<void> updateUser(int id, Map<String, dynamic> data) async {
     final _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
     final _headers = <String, dynamic>{};
     final _data = <String, dynamic>{};
     _data.addAll(data);
     final _options = _setStreamType<User>(
-      Options(method: 'PUT', headers: _headers, extra: _extra)
+      Options(method: 'PATCH', headers: _headers, extra: _extra)
           .compose(
             _dio.options,
             '/api/user/${id}',
@@ -223,14 +223,33 @@ class _ApiClient implements ApiClient {
           .copyWith(baseUrl: _combineBaseUrls(_dio.options.baseUrl, baseUrl)),
     );
     final _result = await _dio.fetch<Map<String, dynamic>>(_options);
-    late User _value;
+    // late User _value;
     try {
-      _value = User.fromJson(_result.data!);
+      // _value = User.fromJson(_result.data!);
     } on Object catch (e, s) {
       errorLogger?.logError(e, s, _options);
       rethrow;
     }
-    return _value;
+    // return _value;
+  }
+
+  @override
+  Future<void> deleteAccount(int id) async {
+    final _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{};
+    final _headers = <String, dynamic>{};
+    const Map<String, dynamic>? _data = null;
+    final _options = _setStreamType<void>(
+      Options(method: 'DELETE', headers: _headers, extra: _extra)
+          .compose(
+            _dio.options,
+            '/api/user/${id}',
+            queryParameters: queryParameters,
+            data: _data,
+          )
+          .copyWith(baseUrl: _combineBaseUrls(_dio.options.baseUrl, baseUrl)),
+    );
+    await _dio.fetch<void>(_options);
   }
 
   @override
@@ -392,13 +411,19 @@ class _ApiClient implements ApiClient {
           )
           .copyWith(baseUrl: _combineBaseUrls(_dio.options.baseUrl, baseUrl)),
     );
+
     final _result = await _dio.fetch<Map<String, dynamic>>(_options);
     late List<Incident> _value;
     try {
       final list = _result.data!["data"]['incidencias']
-          .map((dynamic i) => Incident.fromJson(i as Map<String, dynamic>))
+          .map<Incident>(
+            (dynamic i) =>
+                Incident.fromJson(i as Map<String, dynamic>) as Incident,
+          )
           .toList();
-      _value = list.isNotEmpty ? list : [];
+      _value = list.isNotEmpty
+          ? (list as List<Incident>)
+          : [] as List<Incident>;
     } on Object catch (e, s) {
       errorLogger?.logError(e, s, _options);
       rethrow;
@@ -442,7 +467,7 @@ class _ApiClient implements ApiClient {
     final _data = <String, dynamic>{};
     _data.addAll(request.toJson());
     final _options = _setStreamType<Incident>(
-      Options(method: 'PUT', headers: _headers, extra: _extra)
+      Options(method: 'PATCH', headers: _headers, extra: _extra)
           .compose(
             _dio.options,
             '/api/incidencia/${id}',

@@ -35,8 +35,63 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
 
   final List<String> _roles = ['estudiante', 'tecnico', 'profesor', 'admin'];
 
+  // Expresión regular para validar que solo contenga letras y espacios
+  static final RegExp _nameRegExp = RegExp(r'^[a-zA-ZÀ-ÿ\s]+$');
+
+  @override
+  void initState() {
+    super.initState();
+    // Agregar listeners para autovalidación
+    _nameController.addListener(_validateName);
+    _lastNameController.addListener(_validateLastName);
+  }
+
+  void _validateName() {
+    if (_nameController.text.isNotEmpty) {
+      setState(() {
+        // Trigger rebuild para mostrar/ocultar errores
+      });
+    }
+  }
+
+  void _validateLastName() {
+    if (_lastNameController.text.isNotEmpty) {
+      setState(() {
+        // Trigger rebuild para mostrar/ocultar errores
+      });
+    }
+  }
+
+  String? _validateNameField(String? value) {
+    if (value == null || value.trim().isEmpty) {
+      return 'El nombre es requerido';
+    }
+    if (value.trim().length < 2) {
+      return 'El nombre debe tener al menos 2 caracteres';
+    }
+    if (!_nameRegExp.hasMatch(value.trim())) {
+      return 'El nombre solo puede contener letras';
+    }
+    return null;
+  }
+
+  String? _validateLastNameField(String? value) {
+    if (value == null || value.trim().isEmpty) {
+      return 'Los apellidos son requeridos';
+    }
+    if (value.trim().length < 2) {
+      return 'Los apellidos deben tener al menos 2 caracteres';
+    }
+    if (!_nameRegExp.hasMatch(value.trim())) {
+      return 'Los apellidos solo pueden contener letras';
+    }
+    return null;
+  }
+
   @override
   void dispose() {
+    _nameController.removeListener(_validateName);
+    _lastNameController.removeListener(_validateLastName);
     _nameController.dispose();
     _lastNameController.dispose();
     _ciController.dispose();
@@ -152,31 +207,23 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
                             children: [
                               Expanded(
                                 child: CustomTextField(
+                                  keyboardType: TextInputType.name,
                                   controller: _nameController,
                                   label: 'Nombre',
                                   prefixIcon: Icons.person_outlined,
                                   enabled: !_isRegistering,
-                                  validator: (value) {
-                                    if (value == null || value.isEmpty) {
-                                      return 'Requerido';
-                                    }
-                                    return null;
-                                  },
+                                  validator: _validateNameField,
                                 ),
                               ),
                               const SizedBox(width: 12),
                               Expanded(
                                 child: CustomTextField(
+                                  keyboardType: TextInputType.text,
                                   controller: _lastNameController,
                                   label: 'Apellidos',
                                   prefixIcon: Icons.person_outline,
                                   enabled: !_isRegistering,
-                                  validator: (value) {
-                                    if (value == null || value.isEmpty) {
-                                      return 'Requerido';
-                                    }
-                                    return null;
-                                  },
+                                  validator: _validateLastNameField,
                                 ),
                               ),
                             ],
@@ -279,7 +326,7 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
                               Expanded(
                                 child: CustomTextField(
                                   controller: _aptoController,
-                                  label: 'Apartamento',
+                                  label: 'Departamento',
                                   prefixIcon: Icons.home_repair_service_sharp,
                                   enabled: !_isRegistering,
                                   validator: (value) {

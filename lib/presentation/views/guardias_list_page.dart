@@ -252,9 +252,65 @@ class _GuardiasListPageState extends ConsumerState<GuardiasListPage>
                   ),
                 ),
                 IconButton(
-                  onPressed: () => ref
-                      .read(guardiasProvider.notifier)
-                      .deleteGuardia(guardia.id),
+                  onPressed: () {
+                    showDialog(
+                      context: context,
+                      builder: (context) => AlertDialog(
+                        title: const Text('Eliminar Guardia'),
+                        content: const Text(
+                          '¿Estás seguro de que deseas eliminar esta guardia?',
+                        ),
+                        actions: [
+                          TextButton(
+                            onPressed: () => Navigator.pop(context),
+                            child: const Text('Cancelar'),
+                          ),
+                          ElevatedButton(
+                            onPressed: () async {
+                              Navigator.pop(context);
+                              String? errorMsg;
+                              try {
+                                final success = await ref
+                                    .read(guardiasProvider.notifier)
+                                    .deleteGuardia(guardia.id);
+                                if (mounted) {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    SnackBar(
+                                      content: Text(
+                                        success
+                                            ? 'Guardia eliminada correctamente'
+                                            : (ref
+                                                      .read(guardiasProvider)
+                                                      .error ??
+                                                  'Error al eliminar guardia'),
+                                      ),
+                                      backgroundColor: success
+                                          ? AppTheme.successGreen
+                                          : AppTheme.errorRed,
+                                    ),
+                                  );
+                                }
+                              } catch (e) {
+                                errorMsg = e.toString();
+                                if (mounted) {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    SnackBar(
+                                      content: Text(errorMsg),
+                                      backgroundColor: AppTheme.errorRed,
+                                    ),
+                                  );
+                                }
+                              }
+                            },
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: AppTheme.errorRed,
+                            ),
+                            child: const Text('Eliminar'),
+                          ),
+                        ],
+                      ),
+                    );
+                  },
                   icon: const Icon(Icons.delete, color: Colors.red, size: 16),
                 ),
               ],
@@ -750,7 +806,7 @@ class _GuardiasListPageState extends ConsumerState<GuardiasListPage>
                     leading: CircleAvatar(
                       backgroundColor: AppTheme.primaryBlue,
                       child: Text(
-                        user.firstName.substring(0, 1).toUpperCase(),
+                        user.firstName?.substring(0, 1).toUpperCase() ?? 'U',
                         style: const TextStyle(color: Colors.white),
                       ),
                     ),

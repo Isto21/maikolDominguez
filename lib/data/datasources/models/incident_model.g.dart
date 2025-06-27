@@ -8,12 +8,16 @@ part of 'incident_model.dart';
 
 Incident _$IncidentFromJson(Map<String, dynamic> json) => Incident(
   id: (json['id'] as num).toInt(),
-  guardiaId: (json['guardiaId'] as num).toInt(),
-  title: json['title'] as String,
+  // guardiaId: (json['guardia']['id'] != null)
+  //     ? (json['guardia']['id'] as num?)?.toInt()
+  //     : null,
+  title: json['title'] as String?,
   description: json['description'] as String,
-  severity: json['severity'] as String,
-  reportedAt: DateTime.parse(json['reported_at'] as String),
-  resolved: json['resolved'] as bool,
+  severity: json['severity'] as String?,
+  reportedAt: json['reported_at'] == null
+      ? null
+      : DateTime.parse(json['reported_at'] as String),
+  resolved: json['resolved'] as bool?,
   createdAt: json['created_at'] == null
       ? null
       : DateTime.parse(json['created_at'] as String),
@@ -66,8 +70,8 @@ UpdateIncidentRequest _$UpdateIncidentRequestFromJson(
 Map<String, dynamic> _$UpdateIncidentRequestToJson(
   UpdateIncidentRequest instance,
 ) => <String, dynamic>{
-  'title': instance.title,
+  // 'title': instance.title,
   'description': instance.description,
-  'severity': instance.severity,
-  'resolved': instance.resolved,
+  // 'severity': instance.severity,
+  // 'resolved': instance.resolved,
 };

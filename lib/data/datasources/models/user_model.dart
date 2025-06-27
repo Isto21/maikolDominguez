@@ -1,5 +1,6 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'package:json_annotation/json_annotation.dart';
+import 'package:maikol_tesis/data/datasources/models/incident_model.dart';
 
 part 'user_model.g.dart';
 
@@ -7,7 +8,7 @@ part 'user_model.g.dart';
 class User {
   final int id;
   @JsonKey(name: 'name')
-  final String firstName;
+  final String? firstName;
   @JsonKey(name: 'lastName')
   final String? lastName;
   final String? email;
@@ -19,7 +20,7 @@ class User {
   final String? apto;
   User({
     required this.id,
-    required this.firstName,
+    this.firstName,
     this.lastName,
     this.email,
     this.role,
@@ -40,7 +41,7 @@ class User {
   // @JsonKey(name: 'updated_at')
   // final DateTime updatedAt;
 
-  String get fullName => '$firstName $lastName';
+  String get fullName => '${firstName ?? ''} ${lastName ?? ''}'.trim();
 
   factory User.fromJson(Map<String, dynamic> json) => _$UserFromJson(json);
   Map<String, dynamic> toJson() => _$UserToJson(this);
@@ -132,30 +133,44 @@ class ActivationResponse {
   Map<String, dynamic> toJson() => _$ActivationResponseToJson(this);
 }
 
-// Clase para manejar incidencias
 @JsonSerializable()
-class Incident {
-  final int id;
-  @JsonKey(name: 'guardia_id')
-  final int guardiaId;
-  final String title;
-  final String description;
-  final String severity;
-  @JsonKey(name: 'reported_at')
-  final DateTime reportedAt;
-  final bool resolved;
+class UpdateUserRequest {
+  final String? name;
+  final String? lastName;
+  final String? email;
+  final String? role;
+  final String? apto;
+  final String? group;
+  final String? cardNumber;
+  final String? ci;
+  final Map<String, dynamic>? activationCode;
 
-  Incident({
-    required this.id,
-    required this.guardiaId,
-    required this.title,
-    required this.description,
-    required this.severity,
-    required this.reportedAt,
-    required this.resolved,
+  UpdateUserRequest({
+    this.name,
+    this.lastName,
+    this.email,
+    this.role,
+    this.apto,
+    this.group,
+    this.cardNumber,
+    this.ci,
+    this.activationCode,
   });
 
-  factory Incident.fromJson(Map<String, dynamic> json) =>
-      _$IncidentFromJson(json);
-  Map<String, dynamic> toJson() => _$IncidentToJson(this);
+  factory UpdateUserRequest.fromJson(Map<String, dynamic> json) =>
+      _$UpdateUserRequestFromJson(json);
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = {};
+    if (name != null) data['name'] = name;
+    if (lastName != null) data['lastName'] = lastName;
+    if (email != null) data['email'] = email;
+    if (role != null) data['role'] = role;
+    if (apto != null) data['apto'] = apto;
+    if (group != null) data['group'] = group;
+    if (cardNumber != null) data['cardNumber'] = cardNumber;
+    if (ci != null) data['ci'] = ci;
+    if (activationCode != null) data['activationCode'] = activationCode;
+    return data;
+  }
 }

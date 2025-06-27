@@ -39,6 +39,7 @@ class GuardiasNotifier extends StateNotifier<GuardiasState> {
   GuardiasNotifier(this._repository) : super(const GuardiasState());
 
   Future<void> loadGuardias({int? month, int? year, int? studentId}) async {
+    print('🛡️ GuardiasProvider - Iniciando carga de guardias');
     state = state.copyWith(isLoading: true, error: null);
 
     final result = await _repository.getGuardias(
@@ -48,13 +49,22 @@ class GuardiasNotifier extends StateNotifier<GuardiasState> {
     );
 
     result.fold(
-      (failure) =>
-          state = state.copyWith(isLoading: false, error: failure.message),
-      (guardias) => state = state.copyWith(
-        isLoading: false,
-        guardias: guardias,
-        error: null,
-      ),
+      (failure) {
+        print(
+          '🛡️ GuardiasProvider - Error al cargar guardias: ${failure.message}',
+        );
+        state = state.copyWith(isLoading: false, error: failure.message);
+      },
+      (guardias) {
+        print(
+          '🛡️ GuardiasProvider - Guardias cargadas exitosamente: ${guardias?.length ?? 0} guardias',
+        );
+        state = state.copyWith(
+          isLoading: false,
+          guardias: guardias ?? [],
+          error: null,
+        );
+      },
     );
   }
 

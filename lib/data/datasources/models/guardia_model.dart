@@ -1,5 +1,6 @@
 import 'package:json_annotation/json_annotation.dart';
 
+import 'incident_model.dart';
 import 'user_model.dart';
 
 part 'guardia_model.g.dart';
@@ -118,7 +119,7 @@ class Guardia {
 
   // Getter para contar incidencias no resueltas
   int get incidenciasNoResueltas =>
-      incidencias.where((i) => !i.resolved).length;
+      incidencias.where((i) => i.resolved != true).length;
 }
 
 @JsonSerializable()

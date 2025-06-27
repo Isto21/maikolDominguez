@@ -6,13 +6,13 @@ part 'incident_model.g.dart';
 class Incident {
   final int id;
   @JsonKey(name: 'guardiaId')
-  final int guardiaId;
-  final String title;
+  final int? guardiaId;
+  final String? title;
   final String description;
-  final String severity;
+  final String? severity;
   @JsonKey(name: 'reported_at')
-  final DateTime reportedAt;
-  final bool resolved;
+  final DateTime? reportedAt;
+  final bool? resolved;
   @JsonKey(name: 'created_at')
   final DateTime? createdAt;
   @JsonKey(name: 'updated_at')
@@ -20,12 +20,12 @@ class Incident {
 
   Incident({
     required this.id,
-    required this.guardiaId,
-    required this.title,
+    this.guardiaId,
+    this.title,
     required this.description,
-    required this.severity,
-    required this.reportedAt,
-    required this.resolved,
+    this.severity,
+    this.reportedAt,
+    this.resolved,
     this.createdAt,
     this.updatedAt,
   });

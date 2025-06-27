@@ -48,9 +48,7 @@ class IncidentsRepositoryImpl implements IncidentsRepository {
       final incident = await _apiClient.updateIncident(id, request);
       return Right(incident);
     } catch (e) {
-      return Left(
-        ServerFailure('Error al actualizar incidencia: ${e.toString()}'),
-      );
+      return const Left(ServerFailure('Esta incidencia no le pertenece'));
     }
   }
 
@@ -60,8 +58,10 @@ class IncidentsRepositoryImpl implements IncidentsRepository {
       await _apiClient.deleteIncident(id);
       return const Right(null);
     } catch (e) {
-      return Left(
-        ServerFailure('Error al eliminar incidencia: ${e.toString()}'),
+      return const Left(
+        ServerFailure(
+          'Error al eliminar incidencia: esta incidencia no le pertenece',
+        ),
       );
     }
   }

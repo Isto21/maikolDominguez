@@ -106,6 +106,30 @@ class AuthRepositoryImpl implements AuthRepository {
     await _tokenStorage.clearToken();
   }
 
+  @override
+  Future<Either<Failure, bool>> updateProfile(UpdateUserRequest request) async {
+    try {
+      final currentUser = await _apiClient.getCurrentUser();
+      await _apiClient.updateUser(currentUser.id, request.toJson());
+      return const Right(true);
+    } catch (e) {
+      return Left(ServerFailure(e.toString()));
+    }
+  }
+
+  @override
+  Future<Either<Failure, bool>> deleteAccount() async {
+    try {
+      final currentUser = await _apiClient.getCurrentUser();
+      await _apiClient.deleteAccount(currentUser.id);
+      // Limpiar el token después de eliminar la cuenta
+      await _tokenStorage.clearToken();
+      return const Right(true);
+    } catch (e) {
+      return Left(ServerFailure(e.toString()));
+    }
+  }
+
   String _getErrorMessage(DioException error) {
     if (error.toString().contains('401')) {
       return 'Credenciales incorrectas';

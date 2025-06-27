@@ -3,6 +3,7 @@ import 'package:go_router/go_router.dart';
 import 'package:maikol_tesis/presentation/pages/auth/activation_page.dart';
 import 'package:maikol_tesis/presentation/pages/auth/login_page.dart';
 import 'package:maikol_tesis/presentation/pages/auth/register_page.dart';
+import 'package:maikol_tesis/presentation/pages/edit_profile_page.dart';
 import 'package:maikol_tesis/presentation/pages/incidents_page.dart';
 import 'package:maikol_tesis/presentation/pages/map_page.dart';
 import 'package:maikol_tesis/presentation/pages/profile_page.dart';
@@ -25,6 +26,7 @@ class AppRouter {
   static const String incidents = '/incidents';
   static const String profile = '/profile';
   static const String reports = '/reports';
+  static const String editProfile = '/edit-profile';
 }
 
 final routerProvider = Provider<GoRouter>((ref) {
@@ -80,6 +82,10 @@ final routerProvider = Provider<GoRouter>((ref) {
           GoRoute(
             path: AppRouter.reports,
             builder: (context, state) => const ReportsPage(),
+          ),
+          GoRoute(
+            path: AppRouter.editProfile,
+            builder: (context, state) => const EditProfilePage(),
           ),
         ],
       ),

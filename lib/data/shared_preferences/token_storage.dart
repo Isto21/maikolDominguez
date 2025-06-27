@@ -8,16 +8,22 @@ class TokenStorage {
   Future<void> saveToken(String token) async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setString(_tokenKey, token);
+    print('💾 TokenStorage - Token guardado: ${token.length} caracteres');
   }
 
   Future<void> clearToken() async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.remove(_tokenKey);
+    print('💾 TokenStorage - Token eliminado');
   }
 
   Future<String?> getToken() async {
     final prefs = await SharedPreferences.getInstance();
-    return prefs.getString(_tokenKey);
+    final token = prefs.getString(_tokenKey);
+    print(
+      '💾 TokenStorage - Token recuperado: ${token != null ? "Presente (${token.length} chars)" : "No encontrado"}',
+    );
+    return token;
   }
 
   Future<void> deleteToken() async {

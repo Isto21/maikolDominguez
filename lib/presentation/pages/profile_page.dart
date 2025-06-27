@@ -46,7 +46,7 @@ class ProfilePage extends ConsumerWidget {
                       radius: 50,
                       backgroundColor: Colors.white,
                       child: Text(
-                        user?.firstName.substring(0, 1).toUpperCase() ?? 'U',
+                        user?.firstName?.substring(0, 1).toUpperCase() ?? 'U',
                         style: const TextStyle(
                           fontSize: 36,
                           fontWeight: FontWeight.bold,
@@ -138,7 +138,7 @@ class ProfilePage extends ConsumerWidget {
               delay: const Duration(milliseconds: 400),
               child: _buildInfoSection('Información Académica/Residencial', [
                 _buildInfoItem('Grupo', user?.group ?? 'N/A', Icons.group),
-                _buildInfoItem('Apartamento', user?.apto ?? 'N/A', Icons.home),
+                _buildInfoItem('Departamento', user?.apto ?? 'N/A', Icons.home),
               ]),
             ),
 
@@ -177,6 +177,13 @@ class ProfilePage extends ConsumerWidget {
                     onPressed: () => context.go(AppRouter.guardias),
                     icon: Icons.security,
                     backgroundColor: AppTheme.successGreen,
+                  ),
+                  const SizedBox(height: 12),
+                  CustomButton(
+                    text: 'Editar Perfil',
+                    onPressed: () => context.go(AppRouter.editProfile),
+                    icon: Icons.edit,
+                    backgroundColor: AppTheme.primaryBlue,
                   ),
                   const SizedBox(height: 12),
                   CustomButton(

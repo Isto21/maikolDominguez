@@ -364,8 +364,9 @@ class _CreateGuardiaPageState extends ConsumerState<CreateGuardiaPage> {
                                   backgroundColor: AppTheme.primaryBlue,
                                   child: Text(
                                     user.firstName
-                                        .substring(0, 1)
-                                        .toUpperCase(),
+                                            ?.substring(0, 1)
+                                            .toUpperCase() ??
+                                        '',
                                     style: const TextStyle(color: Colors.white),
                                   ),
                                 ),

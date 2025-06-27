@@ -140,12 +140,19 @@ class AuthNotifier extends StateNotifier<AuthState> {
           return false;
         },
         (response) async {
+          print(
+            '🔑 AuthProvider - Activación exitosa, token presente: ${response.token != null && response.token!.isNotEmpty}',
+          );
           // Si la activación es exitosa y tenemos token, obtener datos del usuario
           if (response.token != null && response.token!.isNotEmpty) {
+            print('🔑 AuthProvider - Obteniendo datos del usuario...');
             final userResult = await _repository.getCurrentUser();
 
             return userResult.fold(
               (failure) {
+                print(
+                  '🔑 AuthProvider - Error al obtener usuario: ${failure.message}',
+                );
                 state = state.copyWith(
                   isLoading: false,
                   error:
@@ -154,6 +161,9 @@ class AuthNotifier extends StateNotifier<AuthState> {
                 return true; // Consideramos la activación exitosa aunque falle obtener el usuario
               },
               (user) {
+                print(
+                  '🔑 AuthProvider - Usuario obtenido exitosamente: ${user.firstName}',
+                );
                 state = state.copyWith(
                   user: user,
                   isLoading: false,
@@ -163,12 +173,14 @@ class AuthNotifier extends StateNotifier<AuthState> {
               },
             );
           } else {
+            print('🔑 AuthProvider - No se recibió token en la activación');
             state = state.copyWith(isLoading: false, error: null);
             return true;
           }
         },
       );
     } catch (e) {
+      print('🔑 AuthProvider - Error en activación: $e');
       state = state.copyWith(
         isLoading: false,
         error: 'Error de conexión: ${e.toString()}',
@@ -187,6 +199,49 @@ class AuthNotifier extends StateNotifier<AuthState> {
     if (state.error != null) {
       state = state.copyWith(error: null);
     }
+  }
+
+  Future<bool> updateProfile(UpdateUserRequest request) async {
+    state = state.copyWith(isLoading: true, error: null);
+
+    final result = await _repository.updateProfile(request);
+
+    return result.fold(
+      (failure) {
+        state = state.copyWith(isLoading: false, error: failure.message);
+        return false;
+      },
+      (updatedUser) {
+        state = state.copyWith(
+          isLoading: false,
+          // user: updatedUser,
+          error: null,
+        );
+        return true;
+      },
+    );
+  }
+
+  Future<bool> deleteAccount() async {
+    state = state.copyWith(isLoading: true, error: null);
+
+    final result = await _repository.deleteAccount();
+
+    return result.fold(
+      (failure) {
+        state = state.copyWith(isLoading: false, error: failure.message);
+        return false;
+      },
+      (_) {
+        state = state.copyWith(
+          isLoading: false,
+          user: null,
+          // token: null,
+          error: null,
+        );
+        return true;
+      },
+    );
   }
 }
 

@@ -278,7 +278,7 @@ class _ActivationPageState extends ConsumerState<ActivationPage> {
               backgroundColor: AppTheme.successGreen,
             ),
           );
-          context.go(AppRouter.home);
+          context.go(AppRouter.login);
         } else {
           // Activación falló
           final authState = ref.read(authProvider);
